@@ -121,7 +121,7 @@ export default function Tree({
 
   const editNode = () => {    
     setSelectedID(data.$ID);    
-    dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(data)))));
+    dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(data))), false));
   }
 
   // Check if a value is an object
@@ -225,7 +225,7 @@ export default function Tree({
 
       if (Object.keys(getCurrentNodeResult).length > 0) 
       {
-        dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(getCurrentNodeResult[0].value)))));
+        dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(getCurrentNodeResult[0].value))), true));
       }
     }
   }

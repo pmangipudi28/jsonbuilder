@@ -159,9 +159,13 @@ const jsonReducer = (state = initialState, action) => {
               jsonData: desimplify(jsonNodesAfterRemoval)
             }      
       case SELECTED_NODE_JSON:
+
+            console.log("Updated SELECTED_NODE_JSON 123...... " + action.updated);
+
             return { 
               ...state,
-              selectedNodeData: action.selectedNodeData
+              selectedNodeData: action.selectedNodeData,
+              updated: action.updated
             }
       case UPDATE_SELECTED_NODE:
             return { 

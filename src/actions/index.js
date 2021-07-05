@@ -116,10 +116,11 @@ export const remove_node_json = (data, path) => {
     }
 }
 
-export const selected_node_json = (selectedNodeData) => { 
+export const selected_node_json = (selectedNodeData, updated) => { 
     return {
         type: SELECTED_NODE_JSON,
-        selectedNodeData: selectedNodeData
+        selectedNodeData: selectedNodeData,
+        updated: updated
     }
 }
 
