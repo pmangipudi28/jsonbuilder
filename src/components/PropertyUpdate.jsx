@@ -47,9 +47,12 @@ function PropertyUpdate() {
     const classes = useStyles();
 
     const [selectedNode, setSelectedNode] = useState({});
-    const [expanded, setExpanded] = useState(false);    
+    const [expanded, setExpanded] = useState(false);
+
+    const [jsonGreatGrandParent, setGreatGrandParent] = useState({});
     const [jsonGrandParent, setGrandParent] = useState({});
     const [jsonParent, setParent] = useState({});    
+    const [jsonChild, setChild] = useState({});
     const [jsonGrandChild, setGrandChild] = useState({});
     
     const currentState = useSelector(state => state.jsonReducer.present);    
@@ -58,54 +61,187 @@ function PropertyUpdate() {
         setExpanded(isExpanded ? panel : false);
     };
 
-    useEffect(() => {
-        setSelectedNode(eval(currentState.selectedNodeData));
-    }, [currentState.selectedNodeData]);
 
     useEffect(() => {
-        
-        setGrandChild({});
-        setParent({});
+
+        setGreatGrandParent({});
         setGrandParent({});
+        setParent({});
+        setChild({});
+        setGrandChild({});
                 
-        if (selectedNode && selectedNode.$PID !== "ROOT")
+        if (currentState.selectedNodeData && currentState.selectedNodeData.$PID !== "ROOT")
         {
-            const getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === selectedNode.$PID; });
+            let getCurrentNodeResult = "";
+            
+            let getGreatGrandParentResult = "";
+            let getGrandParentResult = "";
+            let getParentResult = "";
+            let getChildResult = "";
+            let getGrandChildResult = "";
 
-            if (Object.keys(getParentResult).length > 0)
+            if (Object.keys(currentState.selectedNodeData).length > 0)
             {
-                if (getParentResult[0].path === "")
-                {
-                    // Setting for only Grandparent
-                    const getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === selectedNode.$ID; });
+                getCurrentNodeResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === currentState.selectedNodeData.$ID; });
 
-                    setGrandParent(getGrandParentResult[0].value);
-                    setGrandChild({});
-                    setParent({});
-                }
-                else if (getParentResult[0].path.toString().split(".").length >= 5 )
+                if (Object.keys(getCurrentNodeResult).length > 0)
                 {
-                    const getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getParentResult[0].value["$PID"]; });
-                    
-                    // Setting for Grandchild, Parent, Grandparent
-                    setParent(getParentResult[0].value);
-                    setGrandChild(eval(selectedNode));
-                    setGrandParent(getGrandParentResult[0].value);
+                    switch (getCurrentNodeResult[0].path.toString().split(".").length) {
+                        case 3:
+    
+                            // Setting for only GreatGrandparent
+                            getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setGreatGrandParent(getGreatGrandParentResult[0].value);
+                            setGrandParent({});
+                            setParent({});
+                            setChild({});
+                            setGrandChild({});
+                            break;
+                        case 5:
+
+                            // Setting for Grand Parent
+                            getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setGrandParent(getGrandParentResult[0].value);
+    
+                            if (Object.keys(getGrandParentResult).length > 0)
+                            {
+                                // Setting for Great Grand Parent
+                                getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getGrandParentResult[0].value["$PID"]; });
+                                setGreatGrandParent(getGreatGrandParentResult[0].value);
+                            }
+    
+                            setParent({});
+                            setChild({});
+                            setGrandChild({});
+    
+                            break;
+                        case 7:
+    
+                            // Setting for Parent
+                            getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setParent(getParentResult[0].value);
+    
+                            if (Object.keys(getParentResult).length > 0)
+                            {
+                                // Setting for Grand Parent
+                                getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getParentResult[0].value["$PID"]; });
+                                setGrandParent(getGrandParentResult[0].value);
+                                
+                                if (Object.keys(getGrandParentResult).length > 0)
+                                {
+                                    // Setting for Great Grand Parent
+                                    getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getGrandParentResult[0].value["$PID"]; });
+                                    setGreatGrandParent(getGreatGrandParentResult[0].value);
+                                }
+                            }
+                            
+                            setChild({});
+                            setGrandChild({});
+                            break;
+                        case 9:
+    
+                            // Setting for Child
+                            getChildResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setChild(getChildResult[0].value);
+    
+                            if (Object.keys(getChildResult).length > 0)
+                            {
+                                // Setting for Parent
+                                getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$PID"]; });
+                                setParent(getParentResult[0].value);
+    
+                                if (Object.keys(getParentResult).length > 0)
+                                {
+                                    // Setting for Grand Parent
+                                    getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getParentResult[0].value["$PID"]; });
+                                    setGrandParent(getGrandParentResult[0].value);
+                                    
+                                    if (Object.keys(getGrandParentResult).length > 0)
+                                    {
+                                        // Setting for Great Grand Parent
+                                        getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getGrandParentResult[0].value["$PID"]; });
+                                        setGreatGrandParent(getGreatGrandParentResult[0].value);
+                                    }
+                                }
+                            }
+                            
+                            setGrandChild({});
+                            break;
+                        case 11:
+                            
+                            // Setting for Grand Child
+                            getGrandChildResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setGrandChild(getGrandChildResult[0].value);
+    
+                            if (Object.keys(getGrandChildResult).length > 0)
+                            {
+                                // Setting for Child
+                                getChildResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$PID"]; });
+                                setChild(getChildResult[0].value);
+    
+                                if (Object.keys(getChildResult).length > 0)
+                                {
+                                    // Setting for Parent
+                                    getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getChildResult[0].value["$PID"]; });
+                                    setParent(getParentResult[0].value);
+    
+                                    if (Object.keys(getParentResult).length > 0)
+                                    {
+                                        // Setting for Grand Parent
+                                        getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getParentResult[0].value["$PID"]; });
+                                        setGrandParent(getGrandParentResult[0].value);
+                                        
+                                        if (Object.keys(getGrandParentResult).length > 0)
+                                        {
+                                            // Setting for Great Grand Parent
+                                            getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getGrandParentResult[0].value["$PID"]; });
+                                            setGreatGrandParent(getGreatGrandParentResult[0].value);
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+    
+                            // Setting for Grand Child
+                            getGrandChildResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$ID"]; });
+                            setGrandChild(getGrandChildResult[0].value);
+    
+                            if (Object.keys(getGrandChildResult).length > 0)
+                            {
+                                // Setting for Child
+                                getChildResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getCurrentNodeResult[0].value["$PID"]; });
+                                setChild(getChildResult[0].value);
+    
+                                if (Object.keys(getChildResult).length > 0)
+                                {
+                                    // Setting for Parent
+                                    getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getChildResult[0].value["$PID"]; });
+                                    setParent(getParentResult[0].value);
+    
+                                    if (Object.keys(getParentResult).length > 0)
+                                    {
+                                        // Setting for Grand Parent
+                                        getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getParentResult[0].value["$PID"]; });
+                                        setGrandParent(getGrandParentResult[0].value);
+                                        
+                                        if (Object.keys(getGrandParentResult).length > 0)
+                                        {
+                                            // Setting for Great Grand Parent
+                                            getGreatGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === getGrandParentResult[0].value["$PID"]; });
+                                            setGreatGrandParent(getGreatGrandParentResult[0].value);
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                    }
                 }
-                else
-                {
-                    // Setting for Parent, Grandparent
-                    const getParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === selectedNode.$ID; });                    
-                    const getGrandParentResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === selectedNode.$PID; });
+               
                 
-                    setGrandChild({});
-
-                    setGrandParent(getGrandParentResult[0].value);
-                    setParent(selectedNode);
-                }
             }
         }       
-    }, [selectedNode]);
+    }, [currentState.selectedNodeData]);
 
     return (
         <div className={classes.root}>
@@ -115,54 +251,98 @@ function PropertyUpdate() {
                     <Typography color="textSecondary" align="left">View & Update Properties</Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12}></Grid>
-                        <Grid item xs={12}>
-                                <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} 
-                                       className={classes.accordionSection}>
+                        {Object.keys(jsonGreatGrandParent).length > 0 ?
+                            <Grid item xs={12}>
+                                    <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} 
+                                        className={classes.accordionSection}>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1bh-content"
+                                                id="panel1bh-header"
+                                                className={classes.accordionDetailsSection}>
+                                                <Typography>{Object.keys(jsonGreatGrandParent).length > 0 ? jsonGreatGrandParent.name : "Field"} Properties</Typography>                
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                {Object.keys(jsonGreatGrandParent).length > 0 ? <PropertyTree selectedJSON={jsonGreatGrandParent} /> : null}
+                                            </AccordionDetails>
+                                    </Accordion>
+                            </Grid>
+                        : null}
+
+                        {Object.keys(jsonGrandParent).length > 0 ?
+                            <Grid item xs={12}>
+                                    <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} 
+                                        className={classes.accordionSection}>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1bh-content"
+                                                id="panel1bh-header"
+                                                className={classes.accordionDetailsSection}>
+                                                <Typography>{Object.keys(jsonGrandParent).length > 0 ? jsonGrandParent.name : "Field"} Properties</Typography>                
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                {Object.keys(jsonGrandParent).length > 0 ? <PropertyTree selectedJSON={jsonGrandParent} /> : null}
+                                            </AccordionDetails>
+                                    </Accordion>
+                            </Grid>
+                        : null}
+
+                        {Object.keys(jsonParent).length > 0 ?
+                            <Grid item xs={12}>
+                                    <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} 
+                                            className={classes.accordionSection}>
                                         <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
                                             aria-controls="panel1bh-content"
                                             id="panel1bh-header"
                                             className={classes.accordionDetailsSection}>
-                                            <Typography>{Object.keys(jsonGrandParent).length > 0 ? jsonGrandParent.name : "Field"} Properties</Typography>                
+                                            <Typography>{Object.keys(jsonParent).length > 0 ? jsonParent.name : "Field"} Properties</Typography>
                                         </AccordionSummary>
                                         <AccordionDetails>
-                                            {Object.keys(jsonGrandParent).length > 0 ? <PropertyTree selectedJSON={jsonGrandParent} /> : null}
+                                            {Object.keys(jsonParent).length > 0 ? <PropertyTree selectedJSON={jsonParent} /> : null}
                                         </AccordionDetails>
-                                </Accordion>
-                        </Grid>
-                        <Grid item xs={12}>
-                                <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')} 
-                                        className={classes.accordionSection}>
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        aria-controls="panel1bh-content"
-                                        id="panel1bh-header"
-                                        className={classes.accordionDetailsSection}>
-                                        <Typography>{Object.keys(jsonParent).length > 0 ? jsonParent.name : "Field"} Properties</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        {Object.keys(jsonParent).length > 0 ? <PropertyTree selectedJSON={jsonParent} /> : null}
-                                    </AccordionDetails>
-                                </Accordion>
-                        </Grid>
-                        <Grid item xs={12}>
-                                <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')} 
-                                        className={classes.accordionSection}>
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon />}
-                                        aria-controls="panel1bh-content"
-                                        id="panel1bh-header"
-                                        className={classes.accordionDetailsSection}>
-                                        <Typography>{Object.keys(jsonGrandChild).length > 0 ? jsonGrandChild.name : "Field"} Properties</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        {Object.keys(jsonGrandChild).length > 0 ? <PropertyTree selectedJSON={jsonGrandChild} /> : null}
-                                    </AccordionDetails>
-                                </Accordion>
-                        </Grid>
+                                    </Accordion>
+                            </Grid>
+                        : null}
+
+                        {Object.keys(jsonChild).length > 0 ?
+                            <Grid item xs={12}>
+                                    <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')} 
+                                            className={classes.accordionSection}>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1bh-content"
+                                            id="panel1bh-header"
+                                            className={classes.accordionDetailsSection}>
+                                            <Typography>{Object.keys(jsonChild).length > 0 ? jsonChild.name : "Field"} Properties</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {Object.keys(jsonChild).length > 0 ? <PropertyTree selectedJSON={jsonChild} /> : null}
+                                        </AccordionDetails>
+                                    </Accordion>
+                            </Grid>
+                        : null}
+
+                        {Object.keys(jsonGrandChild).length > 0 ?
+                            <Grid item xs={12}>
+                                    <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')} 
+                                            className={classes.accordionSection}>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1bh-content"
+                                            id="panel1bh-header"
+                                            className={classes.accordionDetailsSection}>
+                                            <Typography>{Object.keys(jsonGrandChild).length > 0 ? jsonGrandChild.name : "Field"} Properties</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {Object.keys(jsonGrandChild).length > 0 ? <PropertyTree selectedJSON={jsonGrandChild} /> : null}
+                                        </AccordionDetails>
+                                    </Accordion>
+                            </Grid>
+                        : null}
                       </Grid>
                     </>
-                 : ""} 
+                  : ""}
             </>
     </div>
     )

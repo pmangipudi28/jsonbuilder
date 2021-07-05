@@ -43,8 +43,7 @@ const jsonReducer = (state = initialState, action) => {
     switch(action.type) {
       case FETCH_JSON_REQUEST:
             return {
-                ...state,
-                loading: true  
+                ...state  
             }
       case FETCH_JSON_SUCCESS:
             let payload = convertToJson(action.payload);
@@ -88,9 +87,6 @@ const jsonReducer = (state = initialState, action) => {
           } 
       case UPDATE_JSON:
             let updatedJSON = "";
-            console.log("Inside Reducer .... ");
-            console.log(JSON.stringify(action.json));
-            console.log(action.path);
 
             Object.keys(action.payload).map((key, index) => {
               if (key === "root" + action.path + "." + action.key)
@@ -108,8 +104,8 @@ const jsonReducer = (state = initialState, action) => {
       case ADD_OBJECT_JSON:
               
               let jsonUpdatedObjects = "";
+              let updatedJsonObjects = "";
               
-              // console.log("root" + action.path);
               let dataPayload = action.payload;
               let jsonNewObject = "";
 
@@ -122,15 +118,13 @@ const jsonReducer = (state = initialState, action) => {
                 jsonNewObject = {fields: [action.jsonToAdd]};
               }
 
-              console.log("Path ....... " + "root" + action.path);
-              console.log("jsonNewObject ....... " + JSON.stringify(jsonNewObject));
-
               jsonUpdatedObjects = add(dataPayload, "root" + action.path, jsonNewObject);
-              //console.log(JSON.stringify(desimplify(jsonUpdatedObjects)))
+              updatedJsonObjects = desimplify(jsonUpdatedObjects)
 
               return {                
                 ...state,
-                jsonData: convertToJson(desimplify(jsonUpdatedObjects))
+                jsonData: updatedJsonObjects,
+                selectedNodeData: []
               }
 
       case ADD_NODE_JSON:

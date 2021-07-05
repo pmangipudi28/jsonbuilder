@@ -1,7 +1,7 @@
 import React from "react";
 import {useState, useEffect} from "react";
 import {useSelector, useDispatch} from 'react-redux';
-import { simplify } from 'simplifr';
+import { simplify, desimplify } from 'simplifr';
 
 import { Tooltip, Collapse, List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -100,13 +100,24 @@ export default function Tree({
 
   const currentState = useSelector(state => state.jsonReducer.present);
 
-  const handleClick = () => {    
+  const handleClick = () => { 
+
+    // if (parentName.includes(data.name))
+    // {
+    //   setOpen(true)
+    //   setAppear(!appear)
+    // }
+    // else
+    // {
+    //   setOpen(false)
+    //   setAppear(!appear)
+    // }
+
     setOpen(!open);
-    setAppear(!appear)
+    setAppear(!appear);
   };
 
-  const editNode = () => {
-    console.log("Clicked Edit === " + data.$ID);
+  const editNode = () => {    
     setSelectedID(data.$ID);    
     dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(data)))));
   }
@@ -131,14 +142,10 @@ export default function Tree({
 
     for (var node in data) {
         
-        console.log("Test ==== " + isObject(data[node]) && (isArray(data[node])));
-        
         if(isObject(data[node]) && (isArray(data[node])))
         {
-          
           if (data[node][0] && Object.keys(data[node][0]).length > 0)
           {
-            console.log("Array of Nodes");
             jsonNodeToAdd = data[node][0];
 
             getPathResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === jsonNodeToAdd.$ID; });
@@ -153,8 +160,7 @@ export default function Tree({
             }
           }
           else
-          {
-            console.log("First Node in Array");
+          {            
             var jsonNodeToAdd = {"name": "New Field", "id": uuidv4().toString()};
 
             getPathResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === data.$ID; });
@@ -173,13 +179,13 @@ export default function Tree({
 
       if (foundChildObjects === false)
       {
-        console.log("Clone Object");
         jsonNodeToAdd = data;
         getPathResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === data.$ID; });
           
         if (getPathResult != null && getPathResult.length > 0)
         {
             objectPath = getPathResult[0].path;
+            
             getPath(objectPath, getPathResult[0].value, "Object");
             throw breakMap;
         }
@@ -200,10 +206,26 @@ export default function Tree({
   const addJSON = (jsonData, path, jsonNodeToAdd, typeOfObject) => {
 
     let jsonUpdatedData = "";
+    let getCurrentNodeResult = "";
 
     // Run dispatch method and get the updated JSON (of all objects)
-    jsonUpdatedData = dispatch(add_object_json(jsonData, path, RemoveParentId(jsonNodeToAdd), typeOfObject));     
+    let jsonNode = RemoveParentId(jsonNodeToAdd, "$ID", "$PID");
 
+    jsonUpdatedData = dispatch(add_object_json(jsonData, path, jsonNode, typeOfObject));
+
+    let updatedJSONData = desimplify(jsonUpdatedData.payload);
+
+    updatedJSONData = dispatch(fetch_json_success(updatedJSONData));
+
+    if (Object.keys(updatedJSONData).length > 0) 
+    {
+      getCurrentNodeResult = searchObject(updatedJSONData, function (value) { return value !== null && value !== undefined && value.name === jsonNode.name; });
+
+      if (Object.keys(getCurrentNodeResult).length > 0) 
+      {
+        dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(getCurrentNodeResult[0].value)))));
+      }
+    }
   }
 
   const removeNode = () => {
@@ -277,6 +299,7 @@ export default function Tree({
                 </>
         </ListItem>
       )}
+      
       <Collapse
         in={true}
         timeout="auto"

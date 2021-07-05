@@ -101,7 +101,7 @@ export const getReadOnlyStatus = (nodePath, store) => {
         // console.log("jsonSchemaReadOnlyData", jsonSchemaReadOnlyData);
         nodePath = removeNumberAndString(nodePath);
         if (jsonSchemaReadOnlyData.indexOf(nodePath) !== -1) {
-            console.log("nodePath", nodePath);
+            // console.log("nodePath", nodePath);
             return true;
         } else {
             //console.log("nodePath", nodePath);

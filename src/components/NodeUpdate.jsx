@@ -273,8 +273,21 @@ export default function NodeUpdate({
   }
 
   const updateJSON = (jsonData, path, name, json) => {
-      dispatch(update_json(jsonData, path, name, json));
-      // dispatch(update_selected_node(jsonData, path, name, json));
+      
+      let getCurrentNodeResult = "";
+      let jsonUpdatedData = dispatch(update_json(jsonData, path, name, json));
+      let updatedJSONData = dispatch(fetch_json_success(desimplify(jsonUpdatedData.payload)));
+
+      if (Object.keys(updatedJSONData).length > 0) 
+      {
+        getCurrentNodeResult = searchObject(updatedJSONData, function (value) { return value !== null && value !== undefined && value.name === json.name; });
+
+        if (Object.keys(getCurrentNodeResult).length > 0) 
+        {
+          dispatch(selected_node_json(eval(JSON.parse(JSON.stringify(getCurrentNodeResult[0].value)))));
+        }
+      }
+
       setState({ openSnackbar: true,  vertical: 'top', horizontal: 'center', });
   }
 
@@ -450,6 +463,18 @@ export default function NodeUpdate({
     }
   }
 
+  const updateSelectedNode = (jsonData) => {
+    let getPathResult = "";
+    
+    // get updated JSON from the current State of updated JSON (of all objects)
+    getPathResult = searchObject(jsonData, function (value) { return value !== null && value !== undefined && value.$ID === json.$ID; });
+    if (getPathResult != null && getPathResult.length > 0)
+    {
+      // Invoke setJson React Hook
+      dispatch(update_selected_node(getPathResult[0].value))
+    }
+  }
+
   const handleObjectAddition = (key, index) => {    
     Object.keys(json).map((k, i) => {
       if (k == key && i == index)
@@ -522,8 +547,6 @@ export default function NodeUpdate({
   const sortBykey = () => {
       let sorted  = {};
       
-      console.log(sortDirection);
-
       if (sortDirection === "Ascending")
       { 
           Object.keys(json).sort().map((k, i) => {
@@ -550,7 +573,7 @@ export default function NodeUpdate({
 
   // Initial Loading
   useEffect(() => {    
-    // console.log(JSON.stringify(data));
+    
     setJson(data);
     setSearchKey("");
     setSearchClass("listItemText");
@@ -643,10 +666,7 @@ export default function NodeUpdate({
                       ""
                     )}
                          <Grid item xs={7}>
-                            <ListItemText className = {k === searchKey ? classes.searchedValue : classes.listItemText }>
-                              
-                              {/*checkReadOnlyNodes(k) ? (console.log({k} + " is Read-Only")) : console.log({k} + " is Read-Write")*/}
-
+                            <ListItemText className = {k === searchKey ? classes.searchedValue : classes.listItemText }>                              
                               {(k !== '$ID' && k !== '$PID') ?
                                      (checkReadOnlyNodes(k)) ? 
                                        json[k].toString()
