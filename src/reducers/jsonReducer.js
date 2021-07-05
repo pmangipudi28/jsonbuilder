@@ -1,7 +1,7 @@
 import { desimplify } from 'simplifr';
 import { update, remove, add} from 'simplifr'
 
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
+import { convertToJson } from '../components/helper/helper';
 
 const FETCH_JSON_REQUEST = 'FETCH_JSON_REQUEST'
 const FETCH_JSON_SUCCESS = 'FETCH_JSON_SUCCESS'
@@ -15,15 +15,12 @@ const SAVE_CODE_JSON = "SAVE_CODE_JSON";
 const NOT_PROPER_JSON = "NOT_PROPER_JSON";
 const SELECTED_NODE_JSON = 'SELECTED_NODE_JSON';
 const SET_TEMP_JSON_VALUE = 'SET_TEMP_JSON_VALUE';
-const REMOVE_JSON = 'REMOVE_JSON';
 const SAVE_JSON_SCHEMA_READONLY = 'SAVE_JSON_SCHEMA_READONLY';
 const REMOVE_OBJECT_JSON = 'REMOVE_OBJECT_JSON';
 const REMOVE_NODE_JSON = 'REMOVE_NODE_JSON';
 const ADD_NODE_JSON = 'ADD_NODE_JSON';
 const ADD_OBJECT_JSON = 'ADD_OBJECT_JSON';
 const FETCH_JSON_RETURN = 'FETCH_JSON_RETURN';
-const UNDO_JSON = 'UNDO_JSON';
-const REDO_JSON = 'REDO_JSON';
 const UPDATE_SELECTED_NODE = 'UPDATE_SELECTED_NODE'
 
 const initialState = {

@@ -13,35 +13,35 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import IconButton from '@material-ui/core/IconButton';
 import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
-import CloseIcon from '@material-ui/icons/Close';
+
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
+
 import { FileErrorComponent, handleFileValidation } from './helper/InputFileValidationHelper';
 
 import { makeStyles } from '@material-ui/core';
 import { Tooltip } from '@material-ui/core';
-import { ErrorMessage } from './helper/Message';
+
+import { SuccessMessage } from './helper/Message';
 import { validateJson } from './helper/helper';
 
 import { save_json_schema, save_json_schema_status, save_json_schema_readonly } from '../actions'
-//JSON validation code
-import { ValidateJsonSchema, StoreJsonSchemaReadonlyInRedux, getReadOnlyStatus } from '../utility/index'
-//import Snackbar from '@material-ui/core/Snackbar';
-//import Button from '@material-ui/core/Button';
-//import CloseIcon from '@material-ui/icons/Close';
-//--------------------------//
 
-const useStyles = makeStyles(theme => ({
+//JSON validation code
+import { ValidateJsonSchema, StoreJsonSchemaReadonlyInRedux } from '../utility/index'
+
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
+
+const useStyles = makeStyles({
     root: {
         flexGrow: 1,
     },
     pageContent: {
-        margin: theme.spacing(0),
-        padding: theme.spacing(0),
+        margin: jsonBuilderTheme.spacing(0),
+        padding: jsonBuilderTheme.spacing(0),
         backgroundColor: 'transparent',
         borderRadius: '0px',
         height: 'calc(100vh - 0px)',
@@ -52,14 +52,14 @@ const useStyles = makeStyles(theme => ({
         }
     },
     paper: {
-        padding: theme.spacing(0),
+        padding: jsonBuilderTheme.spacing(0),
         textAlign: 'center',
-        color: theme.palette.text.secondary,
+        color: jsonBuilderTheme.palette.text.secondary,
         overflow: 'hidden',
         height: 'calc(100vh - 155px)',
         minHeight: '64px',
         elevation: 1,
-        backgroundColor: theme.palette.editorPaper.main,
+        backgroundColor: jsonBuilderTheme.palette.editorPaper.main,
         borderRadius: '0px',
     },
     paper2: {
@@ -87,7 +87,7 @@ const useStyles = makeStyles(theme => ({
         marginBottom: '0px'
     },
     tooltip: {
-        marginRight: theme.spacing(1),
+        marginRight: jsonBuilderTheme.spacing(1),
         cursor: 'pointer'
     },
     customizedButton: {
@@ -98,47 +98,29 @@ const useStyles = makeStyles(theme => ({
         color: 'gray',
     },
     button: {
-        margin: theme.spacing(1),
+        margin: jsonBuilderTheme.spacing(1),
     },
-}))
+})
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
 }
 
-function getModalStyle() {
-    const top = 40 + rand();
-    const left = 50 + rand();
-
-    return {
-        top: `${top}%`,
-        left: `${left}%`,
-        transform: `translate(-${top}%, -${left}%)`,
-    };
-}
 
 export const SchemaView = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const [modalStyle] = React.useState(getModalStyle);
     const [open, setOpen] = React.useState(false);
 
     const uploadInputRef = useRef(null);
-    const [notification, setNotification] = React.useState("");
+    
     //JSON validation code
     const store = useStore();
-    const [state, setState] = React.useState({
-        Snachopen: false,
-        vertical: 'top',
-        horizontal: 'center',
-    });
-    //const { vertical, horizontal, Snachopen } = state;
-    //const [notification, setNotification] = React.useState("");
+        
     const [isInValid, setIsInValid] = useState(false);
     const currentStateJsonData = useSelector(state => state.jsonReducer.present.jsonSchemaData);
-    //-----------------------------------------//
-
+    
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -161,9 +143,6 @@ export const SchemaView = () => {
             fileReader.readAsText(e.target.files[0], "UTF-8");
 
             fileReader.onload = e => {
-                //JSON validation code
-               // store.subscribe(showAlert);
-                //-----------------------//
                 try {
                     dispatch(save_json_schema(JSON.parse(e.target.result)), 1);
                     let readOnlyJsonSchemaArray = StoreJsonSchemaReadonlyInRedux(store);
@@ -176,21 +155,13 @@ export const SchemaView = () => {
             };
         }
     }
-    /*const handleClose = () => {
-        setIsInValid(false);
-    }*/
 
     const showAlert = () => {
-        //setState({ ...state, Snachopen: false });
         let getJSONSchemaData = ValidateJsonSchema(store);
         if(getJSONSchemaData['hasMessage']){
             if(typeof getJSONSchemaData['message'] === "object") { 
                 dispatch(save_json_schema_status(1), 1) 
             }
-            // dispatch(save_json_schema_status(1), 1);
-           // setState({ Snachopen: true, vertical: 'top', horizontal: 'center' });
-            //setNotification(getJSONSchemaData['message']);
-            //isInValidJson(getJSONSchemaData['message'])
         }
     }
 
@@ -218,19 +189,6 @@ export const SchemaView = () => {
                 className={classes.pageContent}
             >
                 <DialogContent className={classes.dialog}>
-                    {/* {schemaData && Object.keys(schemaData).length > 0 ? 
-                        (<Button
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            className={classes.button}
-                            startIcon={<SaveIcon />}
-                        >
-                            Save Schema
-                        </Button>)
-                    : 
-                        null
-                    } */}
                     <input
                         ref={uploadInputRef}
                         type="file"
@@ -269,8 +227,7 @@ export const SchemaView = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <IconButton onClick={handleClose} color="primary" className={classes.customizedButton}>
-                        {/* <CloseIcon /> */}
+                    <IconButton onClick={handleClose} color="primary" className={classes.customizedButton}>                        
                         <CancelRoundedIcon />
                     </IconButton>
                 </DialogActions>
@@ -286,8 +243,23 @@ export const CodeView = ({ schemaData, replacer = null, space = 2 }) => {
     const [codeView, setCodeView] = useState({});
     const [isValid, setIsValid] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    const [state, setState] = React.useState({
+        openSnackbar: false,
+        vertical: 'top',
+        horizontal: 'center',
+    });
+
+    const { vertical, horizontal, openSnackbar } = state;
+
+    const handleCloseSuccess = () => {
+        setState({ openSnackbar: false, vertical: 'top', horizontal: 'center' })
+    }
+    
     const currentStateJsonData = useSelector(state => state.jsonReducer.present.jsonSchemaData);
     const store = useStore();
+    
     const prettyJson = (e) => {
 
         var status, message;
@@ -304,6 +276,7 @@ export const CodeView = ({ schemaData, replacer = null, space = 2 }) => {
 
     const isValidJson = (jsonData) => {
         setIsValid(true);
+        setErrorMessage("")
     }
 
     const isInValidJson = (message) => {
@@ -325,21 +298,19 @@ export const CodeView = ({ schemaData, replacer = null, space = 2 }) => {
                 dispatch(save_json_schema_status(1))
                 let readOnlyJsonSchemaArray = StoreJsonSchemaReadonlyInRedux(store);
                 dispatch(save_json_schema_readonly(readOnlyJsonSchemaArray), 1);
-            
+                setState({ openSnackbar: true, vertical: 'top', horizontal: 'center' });
+                setSuccessMessage("Schema is saved");
+
             })
     }
 
     const showAlert = () => {
-        //setState({ ...state, Snachopen: false });
         
         let getJSONSchemaData = ValidateJsonSchema(store);
         if(getJSONSchemaData['hasMessage']){
             if(typeof getJSONSchemaData['message'] === "object") { 
                 dispatch(save_json_schema_status(1), 1) 
             }
-            // dispatch(save_json_schema_status(1), 1);
-            //setState({ Snachopen: true, vertical: 'top', horizontal: 'center' });
-            //setNotification(getJSONSchemaData['message']);
             isInValidJson(getJSONSchemaData['message'])
         }
     }
@@ -370,11 +341,12 @@ export const CodeView = ({ schemaData, replacer = null, space = 2 }) => {
                     <FormatAlignLeftOutlinedIcon fontSize="small" onClick={getJsonData} />
                 </Tooltip>
             </div>
-            {codeView != "" && <textarea value={codeView} onChange={prettyJson} className={classes.resizeTextArea} placeholder="Schema File" />}
-            {
-                //errorMessage && !isValid && <div className={classes.alertBox} style={{ position: "sticky", bottom: 0 }}><ErrorMessage errorMessage={errorMessage} /></div>
-                errorMessage && isValid && <FileErrorComponent handleClose={handleClose} isValid={isValid} errorMessage={errorMessage} />
-            }
+            
+            {codeView !== "" && <textarea value={codeView} onChange={prettyJson} className={classes.resizeTextArea} placeholder="Schema File" />}
+            
+            { errorMessage && <FileErrorComponent handleClose={handleClose} isValid={true} errorMessage={errorMessage} /> }
+
+            { successMessage && <SuccessMessage successMessage={successMessage} openAlertbar={openSnackbar} vertical={vertical} horizontal={horizontal} handleCloseSuccess={handleCloseSuccess} />}
         </>
     )
 }

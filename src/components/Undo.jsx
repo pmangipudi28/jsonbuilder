@@ -2,15 +2,10 @@ import React from 'react'
 import { Grid, Tooltip, Badge, IconButton } from '@material-ui/core';
 import UndoRoundedIcon from '@material-ui/icons/UndoRounded';
 import { ActionCreators } from 'redux-undo';
-import {useSelector, useDispatch} from 'react-redux';
-
-const undoAction = () => {
-    // dispatch(ActionCreators.undo())
-}
+import {useDispatch} from 'react-redux';
 
 function Undo() {
 
-    const currentState = useSelector(state => state.jsonReducer.past);
     const dispatch = useDispatch();
 
     const undoAction = () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -9,30 +9,32 @@ import { makeStyles } from '@material-ui/core';
 import { Tooltip } from '@material-ui/core';
 import { FileErrorComponent } from '../helper/InputFileValidationHelper';
 import { SuccessMessage } from "../helper/Message"
-import { validateJson } from '../helper/helper';
-import { fetch_json_success, not_proper_json, set_temp_json, save_temp_json, save_code_json } from '../../actions'
+import { validateJson, RemoveParentId } from '../helper/helper';
+import { not_proper_json, set_temp_json, save_temp_json, save_code_json } from '../../actions'
 
-const useStyles = makeStyles(theme => ({
+import { jsonBuilderTheme } from '../../themes/JsonBuilderTheme';
+
+const useStyles = makeStyles({
     root: {
         flexGrow: 1,
     },
     pageContent: {
-        margin: theme.spacing(1),
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.pageContent.main,
+        margin: jsonBuilderTheme.spacing(1),
+        padding: jsonBuilderTheme.spacing(1),
+        backgroundColor: jsonBuilderTheme.palette.pageContent.main,
         borderRadius: '0px',
         height: 'calc(100vh - 100px)',
         minHeight: '80px',
     },
     paper: {
-        padding: theme.spacing(0),
+        padding: jsonBuilderTheme.spacing(0),
         textAlign: 'center',
-        color: theme.palette.text.secondary,
+        color: jsonBuilderTheme.palette.text.secondary,
         overflow: 'hidden',
         height: 'calc(100vh - 116px)',
         minHeight: '64px',
         elevation: 1,
-        backgroundColor: theme.palette.editorPaper.main,
+        backgroundColor: jsonBuilderTheme.palette.editorPaper.main,
         borderRadius: '0px',
     },
     paperHeight: {
@@ -52,12 +54,10 @@ const useStyles = makeStyles(theme => ({
         marginBottom: '0px'
     },
     tooltip: {
-        marginRight: theme.spacing(1),
+        marginRight: jsonBuilderTheme.spacing(1),
         cursor: 'pointer'
     }
-}))
-
-
+})
 
 export const JsonView = ({ JsonData }) => {
     const classes = useStyles();
@@ -121,45 +121,8 @@ export const CodeView = ({ treeData, replacer = null, space = 2 }) => {
         setErrorMessage(message)
         setIsInValid(true);
     }
-    const setIndent = () => {
-        JSON.stringify(codeView, replacer, space)
-    }
-
     const getJsonData = () => {
         return setCodeView((JSON.stringify(JSON.parse(codeView), replacer, space)));
-    }
-
-    // Check if a value is an object
-    var RemoveParentId = function (o, id, pid) {
-
-        // Check if a value is an object
-        var isObject = function (value) {
-            return (typeof value === 'object');
-        }
-
-        // Check if an object is an array
-        var isArray = function (obj) {
-            return (Object.prototype.toString.call(obj) === '[object Array]');
-        }
-
-        delete o[id];
-        delete o[pid];
-
-        for (var n in o) {
-            if (isObject(o[n]) && (!isArray(o))) {
-                RemoveParentId(o[n], id, pid)
-            }
-
-            if (isObject(o[n]) && (isArray(o[n]))) {
-                var objchild = o[n];
-                for (var i = 0; i < objchild.length; i++) {
-                    var obj = objchild[i];
-                    RemoveParentId(obj, id, pid)
-                }
-            }
-        }
-
-        return o;
     }
 
     const saveJSON = () => {
@@ -190,7 +153,7 @@ export const CodeView = ({ treeData, replacer = null, space = 2 }) => {
 
     useEffect(() => {
         let codeView = "", data;
-        var [status, message] = validateJson(treeData)
+        var [message] = validateJson(treeData)
         if (currentState.properJSON === true) {
             data = RemoveParentId(treeData);
             codeView = JSON.stringify(treeData, null, space);

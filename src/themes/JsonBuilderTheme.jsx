@@ -20,7 +20,7 @@ const colorCode = {
   listIconNodeUpdateTree : '#ff6464'
 }
 
-export const theme = createMuiTheme({
+export const jsonBuilderTheme = createMuiTheme({
   palette: {
     primary: {main: colorCode.appBackground},
     secondary:{main: colorCode.headerToolbar},

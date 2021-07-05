@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Grid, makeStyles, AppBar, Tabs, Tab, Box, Typography } from '@material-ui/core';
 import Header from './Header';
 import PropTypes from 'prop-types';
 import Editor from './Editor';
 import { JsonView } from './JsonView/';
-import theme from '../themes/theme';
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
 
-import { fetch_json_request, fetch_json_success } from '../actions'
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
+import { RemoveParentId } from '../components/helper/helper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   root: {
     flexGrow: 0,
     flex: 0,
@@ -20,9 +19,9 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 0,
   },
   tab: {
-    backgroundColor: theme.palette.viewSectiontab.main,
+    backgroundColor: jsonBuilderTheme.palette.viewSectiontab.main,
     minHeight: '20px',
-    color: theme.palette.contentColor.white,
+    color: jsonBuilderTheme.palette.contentColor.white,
     "& div.MuiTabs-scroller": {
       position: 'inherit',
     },
@@ -30,9 +29,9 @@ const useStyles = makeStyles(theme => ({
       display: 'none'
     },
     "& .Mui-selected ": {
-      borderBottom: '2px solid' + theme.palette.viewSectiontab.border,
+      borderBottom: '2px solid' + jsonBuilderTheme.palette.viewSectiontab.border,
       borderRadius: '1px',
-      boxShadow: '1px 2px 3px ' + theme.palette.viewSectiontab.boxshadow,
+      boxShadow: '1px 2px 3px ' + jsonBuilderTheme.palette.viewSectiontab.boxshadow,
     },
   },
   tabButton: {
@@ -40,9 +39,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '12px',
     fontFamily: ['Open Sans', 'sans-serif'].join(',')
   },
-
-
-}))
+})
 
 /***************Tab view *************** */
 function TabPanel(props) {
@@ -81,8 +78,7 @@ function a11yProps(index) {
 
 /************************************** */
 function ViewSection() {
-  const classes = useStyles();
-  const dispatch = useDispatch();
+  const classes = useStyles();  
 
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
@@ -109,15 +105,7 @@ function ViewSection() {
     }
     else if (currentState.jsonData && Object.keys(currentState.jsonData).length > 0)
     {
-      
-      // if (value === 0)
-      // {
-         
-      // }
-      // else if (value === 1)
-      // {
-      //     jsonData = RemoveParentId(currentState.jsonData, "$ID", "$PID")
-      // }
+        // Do Nothing
     }
   })
   useEffect(() => {

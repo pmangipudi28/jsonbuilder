@@ -1,41 +1,34 @@
 import React from "react";
-import {useState, useEffect, useCallback, useMemo  } from "react";
-import {useSelector, useDispatch, useStore} from 'react-redux';
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch, useStore } from 'react-redux';
 import { simplify, desimplify } from 'simplifr';
-import {update} from 'simplifr'
 
-import { Grid, Paper, Typography, TextField, Collapse, List, ListItem, ListItemIcon, ListItemText, Tooltip, Button, Grow } from "@material-ui/core";
+import { Typography, Grid, TextField, Collapse, List, ListItem, ListItemIcon, ListItemText, Tooltip, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import ChevronRight from "@material-ui/icons/ChevronRight";
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import { ContactSupportOutlined, CropLandscapeSharp, Filter, SettingsInputAntennaTwoTone} from "@material-ui/icons";
 import AddCircleOutlineRoundedIcon from '@material-ui/icons/AddCircleOutlineRounded';
-import PostAddIcon from '@material-ui/icons/PostAdd';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
-import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
 import CancelTwoToneIcon from '@material-ui/icons/CancelTwoTone';
 import ClearRoundedIcon from '@material-ui/icons/ClearRounded';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
-
-import {fetch_json_return, fetch_json_request, fetch_json_success, update_json, remove_node_json, selected_node_json, add_node_json, update_selected_node} from '../actions'
-import {theme} from '../themes/theme';
+import { searchObject } from '../components/helper/helper';
+import { fetch_json_request, fetch_json_success, update_json, remove_node_json, selected_node_json, add_node_json, update_selected_node} from '../actions'
 import { getReadOnlyStatus } from '../utility/index'
 
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     width: "100%",
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: jsonBuilderTheme.palette.background.paper,
   },
   nested: {
     padding: '0px 8px 2px',
@@ -61,10 +54,10 @@ const useStyles = makeStyles((theme) => ({
     -msTransition:'background 1000ms linear',*/
     transition: 'background 500ms linear',
     },
-    [theme.breakpoints.down(780)]: {
+    [jsonBuilderTheme.breakpoints.down(780)]: {
       fontSize: '16px',
     },
-    [theme.breakpoints.down(1025)]: {
+    [jsonBuilderTheme.breakpoints.down(1025)]: {
       fontSize: '26px',
     },
   },
@@ -79,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   listItemText: {
     flex: "0 1 auto",
     color: 'black',
-    [theme.breakpoints.down(1150)]: {
+    [jsonBuilderTheme.breakpoints.down(1150)]: {
       marginLeft: '19%',
     }
   },
@@ -88,25 +81,25 @@ const useStyles = makeStyles((theme) => ({
   },
   listIcon: {
     minWidth: "unset",
-    color: theme.palette.listIconNodeUpdateTree.main,
+    color: jsonBuilderTheme.palette.listIconNodeUpdateTree.main,
   },
   paper: {    
-    borderColor: theme.palette.paperBorderNodeUpdateTree.main,
-    backgroundColor: theme.palette.paperBackgroundNodeUpdateTree.main    
+    borderColor: jsonBuilderTheme.palette.paperBorderNodeUpdateTree.main,
+    backgroundColor: jsonBuilderTheme.palette.paperBackgroundNodeUpdateTree.main    
   },
   paper2: {    
     textAlign: 'center',
-    backgroundColor: theme.palette.paperBackgroundNodeUpdateTree.main 
+    backgroundColor: jsonBuilderTheme.palette.paperBackgroundNodeUpdateTree.main 
   },
   bold: {
     fontWeight: 600
   },
   searchedValue: {    
     fontWeight: '200',
-    backgroundColor: theme.palette.searchedValueNodeUpdateTree.main
+    backgroundColor: jsonBuilderTheme.palette.searchedValueNodeUpdateTree.main
   },
   searchedText: {
-    color: theme.palette.searchedTextNodeUpdateTree.main,
+    color: jsonBuilderTheme.palette.searchedTextNodeUpdateTree.main,
     fontWeight: '200'
   },
   buttonsSection: {
@@ -150,27 +143,20 @@ const useStyles = makeStyles((theme) => ({
  
     },
     addkeyValue:{
-      [theme.breakpoints.down(800)]: {
+      [jsonBuilderTheme.breakpoints.down(800)]: {
         maxWidth: '43%',
       }
     },
     collapseNodeUpdate:{
       paddingLeft: "30px",
-      [theme.breakpoints.down(1000)]: {
+      [jsonBuilderTheme.breakpoints.down(1000)]: {
         paddingLeft: "0px",
       }
+    },
+    readOnly: {
+      color: "#7c7979"
     }
-}));
-
-const ShowBrackets = ({ data, length }) => {
-  const text = length > 1 ? "items" : "item";
-  const brackets = Array.isArray(data) ? " [...]" : " {...}";
-  return (
-    <Typography component="span" variant="body2" color="textSecondary">
-      {`${brackets} // ${length} ${text}`}
-    </Typography>
-  );
-};
+});
 
 export default function NodeUpdate({
   data,
@@ -182,9 +168,9 @@ export default function NodeUpdate({
 }) {
   
   const classes = useStyles();
+  const store = useStore();
 
   const [open, setOpen] = React.useState(false);
-  
   const [appear, setAppear] = useState(false);
   const [addNewValue, setAddNewValue] = useState(false);
   const [appearMain, setAppearMain] = useState(false);
@@ -192,21 +178,14 @@ export default function NodeUpdate({
   const [checkIndex, setCheckIndex] = useState();
   const [checkKeyOfNode, setCheckKeyOfNode] = useState();
   const [checkIndexOfNode, setCheckIndexOfNode] = useState();
-  const [checkedGrow, setCheckedGrow] = React.useState(false);
   const [searchKey, setSearchKey] = React.useState();
   const [searchClass, setSearchClass] = React.useState("");
-  const [path, setPath] = React.useState(null);
   const [json, setJson] = React.useState({});  
-  const [dataChanging, setDataChanging] = React.useState(false);
-  const [jsonData, setJSONData] = React.useState({});
-  const [fields, setFields] = useState([{ value: null }]);
   const [newKey, setNewKey] = useState('') 
   const [newValue, setNewValue] = useState('') 
-  const store = useStore();
-  const [jsonChanged, setJsonChanged] = useState(false) 
   const [keyChanged, setKeyChanged] = useState("")
-  const [sortJSON, setSortJSON] = useState(true);
-
+  const [jsonChanged, setJsonChanged] = useState("")
+  
   const [state, setState] = React.useState({
     openSnackbar: false,
     vertical: 'top',
@@ -299,7 +278,7 @@ export default function NodeUpdate({
   const searchData = () => {
     
     Object.keys(json).map((k, i) => {
-        if (k == searchTerm || (json[k].toString() != "" && json[k].toString().includes(searchTerm)))
+        if (k === searchTerm || (json[k].toString() !== "" && json[k].toString().includes(searchTerm)))
         {
             setSearchKey(k)
             setSearchClass("searchedValue")
@@ -477,7 +456,7 @@ export default function NodeUpdate({
 
   const handleObjectAddition = (key, index) => {    
     Object.keys(json).map((k, i) => {
-      if (k == key && i == index)
+      if (k === key && i === index)
       {        
         setAddNewValue(true);
         setCheckIndexOfNode(index);
@@ -490,7 +469,7 @@ export default function NodeUpdate({
   const handleNodeAddition = (key, index) => {
     
     Object.keys(json).map((k, i) => {
-      if (k == key && i == index)
+      if (k === key && i === index)
       {        
         setAddNewValue(true);
         setCheckIndexOfNode(index);
@@ -502,7 +481,7 @@ export default function NodeUpdate({
 
   const handleMouseEnter = (key, index) => {
       Object.keys(json).map((k, i) => {
-        if (k == key && i == index)
+        if (k === key && i === index)
         {
           setAppear(true);
           setCheckIndex(index);
@@ -519,8 +498,6 @@ export default function NodeUpdate({
   const checkReadOnlyNodes = jsonKey => {
     let getPathResult = "";
     let objectPath = "";
-    let readOnlyKeys = [];
-    let readOnlyKey = undefined;
     var breakMap = {};
 
       // get updated JSON from the current State of updated JSON (of all objects)
@@ -646,19 +623,25 @@ export default function NodeUpdate({
                   {/*<ListItem button className={classes.nested} onClick= {() => handleMouseEnter(k, i)} >*/}
                     <Grid item xs = {1} className={classes.hoverIconGrid}>                
                     <> 
-                          { appear && checkIndex == i && checkkey == k && <>
+                          { appear && checkIndex === i && checkkey === k && <>
                               <Tooltip title="Add a Node">
                                   <AddCircleOutlineRoundedIcon className={classes.hoverIcon} onClick={() => handleNodeAddition(k, i)} fontSize="small" />
                               </Tooltip>
-                              <Tooltip title="Remove a Node">
-                                  <CancelTwoToneIcon className={classes.hoverIcon} onClick = {() => removeNode(k, json)} fontSize="small" />
-                              </Tooltip></>}</> 
+                              {checkReadOnlyNodes(k) ? null :
+                                <Tooltip title="Remove a Node">
+                                    <CancelTwoToneIcon className={classes.hoverIcon} onClick = {() => removeNode(k, json)} fontSize="small" />
+                                </Tooltip>
+                              }
+                              </>}</> 
                     </Grid>             
                     {!Array.isArray(json) ? (
                         <>
                          <Grid item xs={5}>                          
                             <ListItemText className = {k === searchKey ? classes.searchedValue : classes.listItemText }>
-                              {(k !== '$ID' && k !== '$PID') ? k : null}
+                              {(k !== '$ID' && k !== '$PID') ? 
+                                (checkReadOnlyNodes(k)) ?
+                                <Typography className={classes.readOnly}>{k}</Typography>  : k
+                              : null}
                             </ListItemText>
                           </Grid>
                         </>
@@ -668,8 +651,8 @@ export default function NodeUpdate({
                          <Grid item xs={7}>
                             <ListItemText className = {k === searchKey ? classes.searchedValue : classes.listItemText }>                              
                               {(k !== '$ID' && k !== '$PID') ?
-                                     (checkReadOnlyNodes(k)) ? 
-                                       json[k].toString()
+                                     (checkReadOnlyNodes(k)) ?
+                                        <Typography className={classes.readOnly}>{json[k].toString()}</Typography>
                                       : <>
                                           <TextField name={k} fullWidth value={json[k].toString()} onChange={handleChange} 
                                             InputProps={{
@@ -692,14 +675,14 @@ export default function NodeUpdate({
                                : null}
                             </ListItemText>
                         </Grid>
-                        <Grid item xs= {1} className= {classes.buttonsSection}>
-                          <ListItemText className = {k == searchKey ? classes.searchedValue : classes.listItemText }>
+                        <Grid item xs={1} className= {classes.buttonsSection}>
+                          <ListItemText className={k === searchKey ? classes.searchedValue : classes.listItemText }>
                           </ListItemText>
                         </Grid>
                   </ListItem>
                 
                   </Grid>
-                  { addNewValue && checkIndexOfNode == i && checkKeyOfNode == k &&
+                  { addNewValue && checkIndexOfNode === i && checkKeyOfNode === k &&
                     <>
                       <Grid container spacing={1} className={classes.addSection}>
                         <Grid item xs={1} className={classes.addButtonsSection}>  

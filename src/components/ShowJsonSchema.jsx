@@ -14,7 +14,6 @@ import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedI
 
 import DisplayJsonSchema from './jsonschema/DisplayJsonSchema';
 
- 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
 }

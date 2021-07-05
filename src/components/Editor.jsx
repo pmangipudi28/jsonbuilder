@@ -3,32 +3,32 @@ import {useSelector, useDispatch} from 'react-redux';
 import { Grid, Paper, makeStyles } from '@material-ui/core';
 import Tree from "./Tree";
 import PropertyUpdate from "./PropertyUpdate";
-import {theme} from '../themes/theme'
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme'
 import { fetch_json_success } from '../actions';
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
+import { searchObject } from '../components/helper/helper';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     root: {
         flexGrow: 1,
     },
     pageContent: {
-        margin: theme.spacing(1),
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.pageContent.main,
+        margin: jsonBuilderTheme.spacing(1),
+        padding: jsonBuilderTheme.spacing(1),
+        backgroundColor: jsonBuilderTheme.palette.pageContent.main,
         borderRadius: '0px',
         height: 'calc(100vh - 100px)'
     },
     paper: {
-        padding: theme.spacing(2),
+        padding: jsonBuilderTheme.spacing(2),
         textAlign: 'center',
-        color: theme.palette.text.secondary,
+        color: jsonBuilderTheme.palette.text.secondary,
         height: 'calc(100vh - 115px)',
         overflow: 'auto',
         elevation: 1,
-        backgroundColor: theme.palette.editorPaper.main,
+        backgroundColor: jsonBuilderTheme.palette.editorPaper.main,
         borderRadius: '0px'
       },     
-}))
+})
 
 function Editor() {
     

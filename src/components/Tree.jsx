@@ -10,18 +10,20 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import AddCircleOutlineRoundedIcon from '@material-ui/icons/AddCircleOutlineRounded';
 import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
 import CancelTwoToneIcon from '@material-ui/icons/CancelTwoTone';
-import { convertToJson, RemoveParentId, searchObject, validateJson, uuidv4 } from '../components/helper/helper';
+import { RemoveParentId, searchObject, uuidv4 } from '../components/helper/helper';
 
 import { fetch_json_success, selected_node_json, remove_object_json, add_object_json } from '../actions'
 
-const useStyles = makeStyles((theme) => ({
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
+
+const useStyles = makeStyles({
   root: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: jsonBuilderTheme.palette.background.paper,
   },
   nested: {
-    padding: `0px ${theme.spacing(3)}px`,
+    padding: `0px ${jsonBuilderTheme.spacing(3)}px`,
   },  
   listItem: {
     padding: 0,
@@ -49,30 +51,30 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedNode: {
     color: 'blue',
-    [theme.breakpoints.down(1000)]: {
+    [jsonBuilderTheme.breakpoints.down(1000)]: {
       fontSize: '11px'
     },
   },
   treeList:{
-    [theme.breakpoints.down(1000)]: {
+    [jsonBuilderTheme.breakpoints.down(1000)]: {
       '& span': { fontSize: '15px'}
     },
   },
   treeIcon:{
-    [theme.breakpoints.down(1000)]: {
+    [jsonBuilderTheme.breakpoints.down(1000)]: {
       fontSize: '20px'
     },
   },
   treeCollapse: {
     paddingLeft: "30px",
-    [theme.breakpoints.down(1000)]: {
+    [jsonBuilderTheme.breakpoints.down(1000)]: {
       paddingLeft: "15px",
     },
   },
   editedNode: {
     color: 'red'
   }  
-}));
+});
 
 const ShowNodes = ({ data, parentName }) => { 
   return (   
@@ -161,7 +163,7 @@ export default function Tree({
           }
           else
           {            
-            var jsonNodeToAdd = {"name": "New Field", "id": uuidv4().toString()};
+            var jsonNode = {"name": "New Field", "id": uuidv4().toString()};
 
             getPathResult = searchObject(currentState.jsonData, function (value) { return value !== null && value !== undefined && value.$ID === data.$ID; });
               
@@ -169,7 +171,7 @@ export default function Tree({
             {
                 objectPath = getPathResult[0].path;
 
-                getPath(objectPath + "." + node, jsonNodeToAdd, "ArrayObject");
+                getPath(objectPath + "." + node, jsonNode, "ArrayObject");
                 throw breakMap;
             }
             break;
@@ -185,7 +187,7 @@ export default function Tree({
         if (getPathResult != null && getPathResult.length > 0)
         {
             objectPath = getPathResult[0].path;
-            
+
             getPath(objectPath, getPathResult[0].value, "Object");
             throw breakMap;
         }

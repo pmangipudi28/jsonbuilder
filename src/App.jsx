@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, CssBaseline } from '@material-ui/core'
 import { ThemeProvider } from "@material-ui/styles";
-import { theme } from "./themes/theme";
+import { jsonBuilderTheme } from "./themes/JsonBuilderTheme";
 import Home from '../src/components/Home'
 
 const useStyles = makeStyles({
@@ -15,7 +15,7 @@ function App() {
   
   const classes = useStyles();
   return (    
-    <ThemeProvider theme={theme}>        
+    <ThemeProvider theme={jsonBuilderTheme}>        
         <div className={classes.appMain}>
           <Home />
         </div>

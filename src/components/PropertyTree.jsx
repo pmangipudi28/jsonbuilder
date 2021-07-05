@@ -1,5 +1,5 @@
 import React from 'react'
-import {useState, useEffect} from "react";
+import {useState} from "react";
 
 import { AppBar, Toolbar, Grid, Badge, IconButton, Tooltip, Paper } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core'
@@ -7,27 +7,27 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
 import SortRoundedIcon from '@material-ui/icons/SortRounded';
-import FilterListRoundedIcon from '@material-ui/icons/FilterListRounded';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
-import {theme} from '../themes/theme';
+
 import NodeUpdate from './NodeUpdate';
-import RefreshIcon from '@material-ui/icons/Refresh';
+
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
 
 const useStyles = makeStyles({
     root: {
         width: '100%',
-        backgroundColor: theme.palette.propertyTreeRoot.main,
+        backgroundColor: jsonBuilderTheme.palette.propertyTreeRoot.main,
         minHeight:"50px"
     },
     paper: {
-        marginRight: theme.spacing(0),
+        marginRight: jsonBuilderTheme.spacing(0),
         width: 'auto',
         minHeight: "200px",
-        backgroundColor: theme.palette.editorPaper.main
+        backgroundColor: jsonBuilderTheme.palette.editorPaper.main
     },
     textbox: {
-        backgroundColor: theme.palette.textboxPropertyTree.main,
+        backgroundColor: jsonBuilderTheme.palette.textboxPropertyTree.main,
         disableRipple: true        
     },
     file: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
         padding: '0px 8px',
         fontSize: '0.8rem',
         '&:hover': {
-            backgroundColor: theme.palette.searchInputPropertyTree.main
+            backgroundColor: jsonBuilderTheme.palette.searchInputPropertyTree.main
         },
         '& .MuiSvgIcon-root' : {
             marginLeft: '5px'
@@ -50,21 +50,21 @@ const useStyles = makeStyles({
     },
     search: {
         position: 'relative',
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
+        borderRadius: jsonBuilderTheme.shape.borderRadius,
+        backgroundColor: fade(jsonBuilderTheme.palette.common.white, 0.15),
         '&:hover': {
-          backgroundColor: fade(theme.palette.common.white, 0.25),
+          backgroundColor: fade(jsonBuilderTheme.palette.common.white, 0.25),
         },
-        marginRight: theme.spacing(2),
+        marginRight: jsonBuilderTheme.spacing(2),
         marginLeft: 0,
         width: '100%',
-        [theme.breakpoints.up('sm')]: {
-          marginLeft: theme.spacing(3),
+        [jsonBuilderTheme.breakpoints.up('sm')]: {
+          marginLeft: jsonBuilderTheme.spacing(3),
           width: 'auto',
         },
       },
       searchIcon: {
-        padding: theme.spacing(0, 2),
+        padding: jsonBuilderTheme.spacing(0, 2),
         height: '100%',
         position: 'absolute',
         pointerEvents: 'none',
@@ -76,12 +76,12 @@ const useStyles = makeStyles({
         color: 'inherit',
       },
       inputInput: {
-        padding: theme.spacing(1, 1, 1, 0),
+        padding: jsonBuilderTheme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-        transition: theme.transitions.create('width'),
+        paddingLeft: `calc(1em + ${jsonBuilderTheme.spacing(4)}px)`,
+        transition: jsonBuilderTheme.transitions.create('width'),
         width: '100%',
-        [theme.breakpoints.up('md')]: {
+        [jsonBuilderTheme.breakpoints.up('md')]: {
           width: '20ch',
         },
       },
@@ -97,19 +97,19 @@ function PropertyTree({selectedJSON}) {
     const [searchTerm, setSearchTerm] = useState();
 
     //for Sort 
-    const [JSON, setJSON] = useState(selectedJSON);
+    
     const [sortJSON, setSortJSON] = useState(true);
     const [sortDirection, setSortDirection] = useState("");
 
     const handleExpand = () => {
-        if (expand == false){
+        if (expand === false){
             setExpand(!expand);
-        }else if (expand == true){
+        }else if (expand === true){
             setExpand(false);
         }
     }
     const sortBykey = direction => {
-        let sorted  = {};
+        
         
         if (sortJSON === true)
         {            
@@ -123,17 +123,12 @@ function PropertyTree({selectedJSON}) {
         }        
     };
 
-    const reset = () => {
-        setSortJSON(undefined);
-        setSortDirection("Reset");
-    };
-
     const searchData = e => {  
         setSearchTerm(e.target.value);
     }
     
     return (
-        <MuiThemeProvider theme={theme}>
+        <MuiThemeProvider theme={jsonBuilderTheme}>
         <div className={classes.customWidth}>
             <Paper variant="elevation" className={classes.paper}>
                 <AppBar position="static" fontSize="small" className = {classes.root}>

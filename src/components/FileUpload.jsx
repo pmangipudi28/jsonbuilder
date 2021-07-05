@@ -5,7 +5,9 @@ import {makeStyles} from '@material-ui/core/styles'
 import DropzoneComponent from './DropzoneComponent'
 import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
 
-const useStyles = makeStyles((theme) => ({
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme'
+
+const useStyles = makeStyles({
     modal: {
       display: 'flex',
       alignItems: 'center',
@@ -13,15 +15,15 @@ const useStyles = makeStyles((theme) => ({
       border: '0px solid #fff'
     },
     paper: {
-      backgroundColor: theme.palette.background.paper,
-      boxShadow: theme.shadows[5],
+      backgroundColor: jsonBuilderTheme.palette.background.paper,
+      boxShadow: jsonBuilderTheme.shadows[5],
       padding: '100px',
       width: '90%',
       minHeight: '500px',
       textAlign: 'center',
       backgroundColor: '#57a3eb'
     },
-  }));
+  });
 
 function FileUpload() {
     const classes = useStyles();

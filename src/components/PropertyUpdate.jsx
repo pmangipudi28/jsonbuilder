@@ -11,26 +11,25 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 
 import PropertyTree from './PropertyTree';
+import { searchObject } from '../components/helper/helper';
 
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
 
-import {theme} from '../themes/theme';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     width: '100%',
   },
   heading: {
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: jsonBuilderTheme.typography.pxToRem(15),
     flexBasis: '33.33%',
     flexShrink: 0,    
   },
   secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
+    fontSize: jsonBuilderTheme.typography.pxToRem(15),
+    color: jsonBuilderTheme.palette.text.secondary,
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: jsonBuilderTheme.spacing(2),
     textAlign: 'left',
     elevation: 1,
   },
@@ -38,15 +37,13 @@ const useStyles = makeStyles((theme) => ({
     // display: 'block'
   },
   accordionSection: {
-    background: theme.palette.accordionSectionPropertyUpdate.main
+    background: jsonBuilderTheme.palette.accordionSectionPropertyUpdate.main
   }
-}));
+});
 
 function PropertyUpdate() {
 
-    const classes = useStyles();
-
-    const [selectedNode, setSelectedNode] = useState({});
+    const classes = useStyles();    
     const [expanded, setExpanded] = useState(false);
 
     const [jsonGreatGrandParent, setGreatGrandParent] = useState({});

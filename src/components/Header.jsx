@@ -12,48 +12,43 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuList from '@material-ui/core/MenuList';
 
-import RedoRoundedIcon from '@material-ui/icons/RedoRounded';
-
 // Sub-components for each menu items
 import OpenFromDisk from '../components/OpenFromDisk'
 import OpenFromCloud from '../components/OpenFromCloud'
-import Refresh from '../components/Refresh'
+
 import Undo from '../components/Undo'
 import Redo from '../components/Redo'
 import PowerOff from '../components/PowerOff'
 import SaveToDisk from '../components/SaveToDisk'
 import SaveToURL from '../components/SaveToURL'
-import Settings from '../components/Settings'
+
 import SettingsOutlinedIcon from '@material-ui/icons/SettingsOutlined';
-import OpenJsonSchema from '../components/OpenJsonSchema'
-//import ShowJsonSchema from '../components/ShowJsonSchema'
+
 import { SchemaView } from '../components/SchemaView'
 
-import { convertToJson, RemoveParentId, searchObject, validateJson } from '../components/helper/helper';
-
-//Helper
+// Helper
 import { FileErrorComponent, handleFileValidation } from './helper/InputFileValidationHelper';
 import { fetch_json_success, save_temp_json, save_json_schema_status } from '../actions'
-//JSON validation code
+
+// JSON validation code
 import { ValidateJsonSchema } from '../utility/index'
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
-//--------------------------//
 
-import { theme } from '../themes/theme';
+import { jsonBuilderTheme } from '../themes/JsonBuilderTheme';
 
 const useStyles = makeStyles({
     root: {
         transform: 'translateZ(0)',
-        background: theme.palette.header.main,
-        color: theme.palette.header.contrastText   // 454749    // 325C05
+        background: jsonBuilderTheme.palette.header.main,
+        color: jsonBuilderTheme.palette.header.contrastText   // 454749    // 325C05
     },
     toolbar: {
         minHeight: '40px',
     },
     paper: {
-        marginRight: theme.spacing(2),
+        marginRight: jsonBuilderTheme.spacing(2),
     },
     file: {
         display: 'none'
@@ -98,16 +93,18 @@ export default function Header() {
     const [isValid, setIsValid] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const anchorRefOfOpen = useRef(null);
+
     //JSON validation code
     const store = useStore();
     const [state, setState] = React.useState({
-        Snachopen: false,
+        snachOpen: false,
         vertical: 'top',
         horizontal: 'center',
     });
-    const { vertical, horizontal, Snachopen } = state;
+
+    const { vertical, horizontal, snachOpen } = state;
     const [notification, setNotification] = React.useState("");
-    //-----------------------------------------//
+    
     const handleToggleOfOpen = () => {
         setOpen((prevOpen) => !prevOpen);
     };
@@ -146,10 +143,7 @@ export default function Header() {
 
                 let jsonData = "";
                 //JSON validation code
-                //store.subscribe(showAlert);
-                //-----------------------//
                 try {
-                   // store.subscribe(showAlert);
                     try {
                         jsonData = eval(JSON.parse(JSON.stringify(e.target.result)));
                     }
@@ -248,7 +242,7 @@ export default function Header() {
     }
     // JSON VAlidation code
     const showAlert = () => {
-        setState({ ...state, Snachopen: false });
+        setState({ ...state, snachOpen: false });
         let getJSONSchemaData = ValidateJsonSchema(store);
         if(getJSONSchemaData['hasMessage']){
             if(typeof getJSONSchemaData['message'] === "object") { 
@@ -256,9 +250,7 @@ export default function Header() {
                 dispatch(save_json_schema_status(1), 1) 
                 handleError(true, getJSONSchemaData['message']);
             }
-            // dispatch(save_json_schema_status(1), 1);
-           // setState({ Snachopen: true, vertical: 'top', horizontal: 'center' });
-            
+           
         }
         
     }
@@ -268,16 +260,16 @@ export default function Header() {
 
     const snackbarHandleClose = () => {
 
-        setState({ ...state, Snachopen: false });
+        setState({ ...state, snachOpen: false });
     };
-    //-----------------------------------------//
+    
 
     return (
 
         <AppBar position="static" className={classes.root}>
             <Snackbar
                 anchorOrigin={{ vertical, horizontal }}
-                open={Snachopen}
+                open={snachOpen}
                 onClose={snackbarHandleClose}
                 color="primary"
                 message={notification}
@@ -302,7 +294,7 @@ export default function Header() {
                         </Typography>
                     </Grid>
                     <Grid item sm></Grid>
-                    <ThemeProvider theme={theme}>
+                    <ThemeProvider theme={jsonBuilderTheme}>
                         <Grid item>
                             <IconButton ref={anchorRefOfOpen}
                                 aria-controls={open ? 'menu-list-grow' : undefined}
@@ -339,7 +331,7 @@ export default function Header() {
                             </Popper>
                         </Grid>
                     </ThemeProvider>
-                    <ThemeProvider theme={theme}>
+                    <ThemeProvider theme={jsonBuilderTheme}>
                         <Grid item>
                             <IconButton ref={anchorRefOfSave}
                                 aria-controls={save ? 'menu-list-grow' : undefined}
@@ -370,7 +362,7 @@ export default function Header() {
                         </Grid>
                     </ThemeProvider>
                     {/* <Settings /> */}
-                    <ThemeProvider theme={theme}>
+                    <ThemeProvider theme={jsonBuilderTheme}>
                         <Grid item>
                             <IconButton ref={anchorRefOfSetting}
                                 aria-controls={setting ? 'menu-list-grow' : undefined}
