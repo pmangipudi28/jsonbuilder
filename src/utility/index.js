@@ -43,10 +43,10 @@ const collectAllErrors = (getJSONSchemaData) => {
             return notificationComponent;
 
         } else {
-            return "Data save successfuly";
+            return "";
         }
     } else {
-        return "Data save successfuly";
+        return "";
     }
 
 }
