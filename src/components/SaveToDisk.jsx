@@ -5,14 +5,14 @@ import { Tooltip, Typography } from '@material-ui/core';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { handleSaveToPC } from '../components/helper/helper';
+import { RemoveParentId, handleSaveToPC } from '../components/helper/helper';
 
 function SaveToDisk() {
 
     const currentState = useSelector(state => state.jsonReducer.present);
     const handleSave = () =>
     {
-        handleSaveToPC(currentState.jsonData);
+        handleSaveToPC(RemoveParentId(currentState.jsonData, "$ID", "$PID"));
     }
 
     return (

@@ -34,7 +34,13 @@ const collectAllErrors = (getJSONSchemaData) => {
         if (Object.entries(getJSONSchemaData.errors).length) {
            
             const listItems = getJSONSchemaData.errors.map((ValidationError) =>
-                <li>{ValidationError.path['0']} {ValidationError.message}</li>
+            <li style={{ listStyle: "none", textTransform: "capitalize" }}>
+                <span style={{ fontSize: 16 + "px", fontWeight: "900" }}>
+                    {removeNumberAndString(ValidationError.path.toString()).replace(/,/g,'-')}
+                </span>
+                {" "}
+                {ValidationError.message}
+            </li>
             );
             
             const notificationComponent = (

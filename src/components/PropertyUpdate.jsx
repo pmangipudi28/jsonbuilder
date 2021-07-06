@@ -37,7 +37,8 @@ const useStyles = makeStyles({
     // display: 'block'
   },
   accordionSection: {
-    background: jsonBuilderTheme.palette.accordionSectionPropertyUpdate.main
+    background: jsonBuilderTheme.palette.accordionSectionPropertyUpdate.main,
+    position: "inherit"
   }
 });
 
